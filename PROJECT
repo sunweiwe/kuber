@@ -1,0 +1,16 @@
+domain: go.kuber.io
+layout:
+- go.kubebuilder.io/v3
+projectName: kuber
+repo: github.com/sunweiwe/kuber
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: go.kuber.io
+  group: kuber
+  kind: App
+  path: github.com/sunweiwe/kuber/api/v1beta1
+  version: v1beta1
+version: "3"

@@ -1,0 +1,30 @@
+{
+  "cSpell.words": [
+    "apimachinery",
+    "apiutil",
+    "controllerutil",
+    "corev",
+    "errgroup",
+    "Finalizers",
+    "genclient",
+    "gonic",
+    "istio",
+    "kubebuilder",
+    "kuber",
+    "limitranges",
+    "logr",
+    "metav",
+    "remotecommand",
+    "resourcequota",
+    "resourcequotas",
+    "serviceaccounts",
+    "serviceentries",
+    "subresource",
+    "tenv",
+    "Upgrader",
+    "urfave",
+    "virtualdomain",
+    "virtualservices",
+    "workqueue"
+  ]
+}
