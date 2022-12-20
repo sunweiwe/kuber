@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"os"
 
 	"github.com/go-logr/logr"
 	apiExtensionsV1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
@@ -59,8 +60,39 @@ func (r *PluginStatusController) Init(ctx context.Context) error {
 	return nil
 }
 
+func (r *PluginStatusController) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	exist := &apiExtensionsV1.CustomResourceDefinition{}
+	if err := r.Client.Get(ctx, req.NamespacedName, exist); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	if exist.DeletionTimestamp != nil {
+		r.OnChange(ctx, exist, false)
+	}
+
+	return r.OnChange(ctx, exist, true)
+}
+
 // TODO
 func (r *PluginStatusController) OnChange(ctx context.Context, crd *apiExtensionsV1.CustomResourceDefinition, exist bool) (ctrl.Result, error) {
+	switch crd.Spec.Group {
+	// 判断nginxingress operator是否被安装 nginxingresscontrollers.networking.kuber.io
+
+	}
 
 	return ctrl.Result{}, nil
+}
+
+func (r *PluginStatusController) SetupWithManager(mgr ctrl.Manager) error {
+	go func() {
+		<-mgr.Elected()
+		if err := r.Init(context.TODO()); err != nil {
+			r.Log.Error(err, "failed init plugin status")
+			os.Exit(1)
+		}
+	}()
+
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&apiExtensionsV1.CustomResourceDefinition{}).
+		Complete(r)
 }

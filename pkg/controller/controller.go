@@ -11,10 +11,15 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/sunweiwe/kuber/pkg/api/kuber"
 	"github.com/sunweiwe/kuber/pkg/controller/controllers"
+	"k8s.io/api/apps/v1beta1"
+	apiExtensionsV1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	utilRuntime "k8s.io/apimachinery/pkg/util/runtime"
+	clientScheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	//+kubebuilder:scaffold:imports
 )
 
 var (
@@ -23,6 +28,14 @@ var (
 	leaseDuration = 30 * time.Second
 	renewDeadline = 20 * time.Second
 )
+
+func init() {
+	utilRuntime.Must(clientScheme.AddToScheme(scheme))
+	utilRuntime.Must(v1beta1.AddToScheme(scheme))
+	utilRuntime.Must(apiExtensionsV1.AddToScheme(scheme))
+
+	//+kubebuilder:scaffold:scheme
+}
 
 type Options struct {
 	MetricsAddr          string `json:"metricsAddr,omitempty" description:"The address the metric endpoint binds to."`
@@ -144,6 +157,13 @@ func setupControllers(mgr ctrl.Manager, options *Options, setupLog logr.Logger) 
 		Log:    ctrl.Log.WithName("controllers").WithName("Environment"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Environment")
+		return err
+	}
+
+	if err := (&controllers.PluginStatusController{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("PluginStatus"),
+	}).SetupWithManager(mgr); err != nil {
 		return err
 	}
 

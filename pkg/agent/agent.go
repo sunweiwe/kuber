@@ -12,9 +12,11 @@ import (
 	"github.com/sunweiwe/kuber/pkg/agent/indexer"
 	"github.com/sunweiwe/kuber/pkg/kube"
 	"github.com/sunweiwe/kuber/pkg/log"
+	"github.com/sunweiwe/kuber/pkg/utils/pprof"
 	"github.com/sunweiwe/kuber/pkg/utils/prometheus"
 	"github.com/sunweiwe/kuber/pkg/utils/prometheus/exporter"
 	"github.com/sunweiwe/kuber/pkg/utils/system"
+
 	"golang.org/x/sync/errgroup"
 )
 
@@ -69,7 +71,7 @@ func Run(ctx context.Context, options *Options) error {
 	go c.Start(ctx)
 	c.GetCache().WaitForCacheSync(ctx)
 
-	exporter.NewHandler("kuber_agent", map[string]exporter.CollectorFunc{
+	exporterHandler := exporter.NewHandler("kuber_agent", map[string]exporter.CollectorFunc{
 		"plugin":                 exporter.NewPluginCollectorFunc(c), // plugin exporter
 		"request":                exporter.NewRequestCollector(),     // http exporter
 		"cluster_component_cert": exporter.NewCertCollectorFunc(),    // cluster component cert
@@ -78,6 +80,14 @@ func Run(ctx context.Context, options *Options) error {
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		return apis.Run(ctx, c, options.System, options.API, options.Debug)
+	})
+
+	eg.Go(func() error {
+		return pprof.Run(ctx)
+	})
+
+	eg.Go(func() error {
+		return exporterHandler.Run(ctx, options.Exporter)
 	})
 
 	return nil

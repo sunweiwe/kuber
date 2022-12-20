@@ -1,6 +1,9 @@
 package log
 
-import "go.uber.org/zap"
+import (
+	"github.com/go-logr/logr"
+	"go.uber.org/zap"
+)
 
 type (
 	Logger = zap.SugaredLogger
@@ -14,6 +17,10 @@ type (
 // 1. 对于日志,除了用debug trace warn 等区别等级 ，还可以用更灵活的 .V() 设置等级，可以自行判断根据日志重要性设置。
 
 // 对于 caller，如果logger使用的正确，是不需要caller的 使用 .WithName() 可以手动区分logger所在模块，且使用caller stacktrace 会增加额外的开销。
+
+var NewContext = logr.NewContext
+
+var FromContextOrDiscard = logr.FromContextOrDiscard
 
 func Error(err error, msg string, keysAndValues ...interface{}) {
 	LogrLogger.WithCallDepth(1).Error(err, msg, keysAndValues...)

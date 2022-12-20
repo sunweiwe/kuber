@@ -1,8 +1,10 @@
 package exporter
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"sort"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -10,10 +12,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/version"
 	"github.com/sunweiwe/kuber/pkg/log"
+	"github.com/sunweiwe/kuber/pkg/utils"
+
+	prometheusKuber "github.com/sunweiwe/kuber/pkg/utils/prometheus"
+
 	"go.uber.org/zap"
 )
 
 var (
+	MetricPath             = utils.StrOrDef(os.Getenv("METRIC_PATH"), "/metrics")
 	IncludeExporterMetrics = false
 	MaxRequests            = 40
 )
@@ -34,6 +41,29 @@ func NewHandler(namespace string, collectors map[string]CollectorFunc) *Handler 
 	}
 
 	return newHandler(IncludeExporterMetrics, MaxRequests, log.GlobalLogger.Sugar())
+}
+
+func (h *Handler) Run(ctx context.Context, opts *prometheusKuber.ExporterOptions) error {
+	mu := http.NewServeMux()
+	mu.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`<html>
+			<head><title>Kuber Exporter</title></head>
+			<body>
+			<h1>Kuber Exporter</h1>
+			<p><a href="` + MetricPath + `">Metrics</a></p>
+			</body>
+			</html>`))
+	})
+	mu.Handle(MetricPath, h)
+
+	server := &http.Server{Addr: opts.Listen, Handler: mu}
+	go func() {
+		<-ctx.Done()
+		server.Close()
+		log.Info("prometheus exporter stopped")
+	}()
+	log.FromContextOrDiscard(ctx).Info("prometheus exporter listen on", "address", opts.Listen)
+	return server.ListenAndServe()
 }
 
 func newHandler(includeExporterMetrics bool, maxRequest int, logger *log.Logger) *Handler {
@@ -102,4 +132,24 @@ func (h *Handler) innerHandler(filters ...string) (http.Handler, error) {
 		)
 	}
 	return handler, nil
+}
+
+func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	filters := r.URL.Query()["collect[]"]
+	h.logger.Debug("filters ", filters)
+
+	if len(filters) == 0 {
+		// No filters, use the prepared unfiltered handler.
+		h.unfilteredHandler.ServeHTTP(w, r)
+		return
+	}
+
+	filteredHandler, err := h.innerHandler(filters...)
+	if err != nil {
+		h.logger.Warn("Couldn't create filtered metrics handler: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Couldn't create filtered metrics handler: %s", err)
+		return
+	}
+	filteredHandler.ServeHTTP(w, r)
 }
