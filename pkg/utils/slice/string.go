@@ -6,6 +6,16 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+// ContainStr src contains dest
+func ContainStr(src []string, dest string) bool {
+	for i := range src {
+		if src[i] == dest {
+			return true
+		}
+	}
+	return false
+}
+
 func StringArrayEqual(s1, s2 []string) bool {
 	trans := cmp.Transformer("Sort", func(in []string) []string {
 		out := append([]string(nil), in...)

@@ -36,3 +36,16 @@ type TenantResourceQuota struct {
 	Spec   TenantResourceQuotaSpec   `json:"spec,omitempty"`
 	Status TenantResourceQuotaStatus `json:"status,omitempty"`
 }
+
+//+kubebuilder:object:root=true
+
+// TenantResourceQuotaList contains a list of TenantResourceQuota
+type TenantResourceQuotaList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []TenantResourceQuota `json:"items"`
+}
+
+func init() {
+	SchemeBuilder.Register(&TenantResourceQuota{}, &TenantResourceQuotaList{})
+}

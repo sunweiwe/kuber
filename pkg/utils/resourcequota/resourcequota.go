@@ -15,6 +15,19 @@ cpu memory storage
 pods deployments statefulsets services configmaps secrets jobs cronjobs persistentvolumeclaims
 */
 
+var (
+	ResourceDeployments            corev1.ResourceName = "count/deployments.apps"
+	ResourceStatefulSets           corev1.ResourceName = "count/statefulsets.apps"
+	ResourceJobs                   corev1.ResourceName = "count/jobs.batch"
+	ResourceCronJobs               corev1.ResourceName = "count/cronjobs.batch"
+	ResourceSecrets                corev1.ResourceName = "count/secrets"
+	ResourceConfigMaps             corev1.ResourceName = "count/configmaps"
+	ResourceServices               corev1.ResourceName = "count/services"
+	ResourcePersistentVolumeClaims corev1.ResourceName = "count/persistentvolumeclaims"
+	ResourceDaemonsets             corev1.ResourceName = "count/daemonsets.apps"
+	ResourceIngresses              corev1.ResourceName = "count/ingresses.extensions"
+)
+
 const (
 	DefaultResourceQuotaName = "default"
 	DefaultLimitRangeName    = "default"

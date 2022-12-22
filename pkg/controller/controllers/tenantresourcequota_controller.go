@@ -57,8 +57,8 @@ func (r *TenantResourceQuotaReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	used, hard := emptyResources.DeepCopy(), emptyResources.DeepCopy()
 	for _, item := range resourceQuotaList.Items {
-		statistics.AddResourceList(used, item.Status.Used)
-		statistics.AddResourceList(hard, item.Status.Hard)
+		statistics.ResourceList(used, item.Status.Used)
+		statistics.ResourceList(hard, item.Status.Hard)
 	}
 
 	hard, used = fixInvalidResourceName(hard), fixInvalidResourceName(used)

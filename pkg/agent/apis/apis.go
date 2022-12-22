@@ -57,6 +57,33 @@ func NewDefaultOptions() *Options {
 
 type handlerMux struct{ r *route.Router }
 
+const (
+	ActionCreate  = "create"
+	ActionDelete  = "delete"
+	ActionUpdate  = "update"
+	ActionPatch   = "patch"
+	ActionList    = "list"
+	ActionGet     = "get"
+	ActionCheck   = "check"
+	ActionEnable  = "enable"
+	ActionDisable = "disable"
+)
+
+// register
+func (mu handlerMux) register(group, version, resource, action string, handler gin.HandlerFunc, method ...string) {
+	switch action {
+	case ActionGet:
+		mu.r.MustRegister(http.MethodGet, fmt.Sprintf("/custom/%s/%s/%s/{name}", group, version, resource), handler)
+		mu.r.MustRegister(http.MethodGet, fmt.Sprintf("/custom/%s/%s/namespaces/{namespace}/%s/{name}", group, version, resource), handler)
+	case ActionList:
+		mu.r.MustRegister(http.MethodGet, fmt.Sprintf("/custom/%s/%s/%s", group, version, resource), handler)
+		mu.r.MustRegister(http.MethodGet, fmt.Sprintf("/custom/%s/%s/namespaces/{namespace}/%s", group, version, resource), handler)
+	default:
+		mu.r.MustRegister("*", fmt.Sprintf("/custom/%s/%s/%s/{name}/actions/%s", group, version, resource, action), handler)
+		mu.r.MustRegister("*", fmt.Sprintf("/custom/%s/%s/namespaces/{namespace}/%s/{name}/actions/%s", group, version, resource, action), handler)
+	}
+}
+
 func Run(ctx context.Context, cluster cluster.Interface, system *system.Options, options *Options, debugOptions *DebugOptions) error {
 	G := gin.New()
 
@@ -100,7 +127,60 @@ func Run(ctx context.Context, cluster cluster.Interface, system *system.Options,
 		ctx.JSON(http.StatusOK, version.Get())
 	})
 
-	//TODO
+	serviceProxyHandler := ServiceProxyHandler{}
+	routes.r.ANY("/v1/service-proxy/{realpath}*", serviceProxyHandler.ServiceProxy)
+
+	// restful api for all k8s resources
+	routes.registerREST(cluster)
+
+	// custom api
+	staticsHandler := &StatisticsHandler{C: cluster.GetClient()}
+	routes.register("statistics.system", "v1", "workloads", ActionList, staticsHandler.ClusterWorkloadStatistics)
+	routes.register("statistics.system", "v1", "resources", ActionList, staticsHandler.ClusterResourceStatistics)
+
+	nodeHandler := &NodeHandler{C: cluster.GetClient()}
+	routes.register("core", "v1", "nodes", ActionGet, nodeHandler.GET)
+	routes.register("core", "v1", "nodes", "metadata", nodeHandler.PatchNodeLabelOrAnnotations)
+	routes.register("core", "v1", "nodes", "taint", nodeHandler.PatchNodeTaint)
+	routes.register("core", "v1", "nodes", "cordon", nodeHandler.PatchNodeCordon)
+
+	nsHandler := &NamespaceHandler{C: cluster.GetClient()}
+	routes.register("core", "v1", "namespaces", ActionList, nsHandler.List)
+
+	podHandler := PodHandler{cluster: cluster, debugoptions: debugOptions}
+	routes.register("core", "v1", "pods", ActionList, podHandler.List)
+	routes.register("core", "v1", "pods", "shell", podHandler.Exec)
+	routes.register("core", "v1", "pods", "logs", podHandler.ContainerLogs)
+	routes.register("core", "v1", "pods", "file", podHandler.DownloadFile)
+	routes.register("core", "v1", "pods", "upfile", podHandler.UploadFile)
 
 	return nil
+}
+
+func (mu handlerMux) registerREST(cluster cluster.Interface) {
+	restHandler := REST{
+		client:  cluster.GetClient(),
+		cluster: cluster,
+	}
+
+	mu.r.GET("/v1/{group}/{version}/{resource}", restHandler.List)
+	mu.r.GET("/v1/{group}/{version}/namespaces/{namespace}/{resource}", restHandler.List)
+
+	mu.r.GET("/v1/{group}/{version}/{resource}/{name}", restHandler.Get)
+	mu.r.GET("/v1/{group}/{version}/namespaces/{namespace}/{resource}/{name}", restHandler.Get)
+
+	mu.r.POST("/v1/{group}/{version}/{resource}/{name}", restHandler.Create)
+	mu.r.POST("/v1/{group}/{version}/namespaces/{namespace}/{resource}/{name}", restHandler.Create)
+
+	mu.r.PUT("/v1/{group}/{version}/{resource}/{name}", restHandler.Update)
+	mu.r.PUT("/v1/{group}/{version}/namespaces/{namespace}/{resource}/{name}", restHandler.Update)
+
+	mu.r.PATCH("/v1/{group}/{version}/{resource}/{name}", restHandler.Patch)
+	mu.r.PATCH("/v1/{group}/{version}/namespaces/{namespace}/{resource}/{name}", restHandler.Patch)
+
+	mu.r.DELETE("/v1/{group}/{version}/{resource}/{name}", restHandler.Delete)
+	mu.r.DELETE("/v1/{group}/{version}/namespaces/{namespace}/{resource}/{name}", restHandler.Delete)
+
+	mu.r.PATCH("/v1/{group}/{version}/{resource}/{name}/actions/scale", restHandler.Scale)
+	mu.r.PATCH("/v1/{group}/{version}/namespaces/{namespace}/{resource}/{name}/actions/scale", restHandler.Scale)
 }

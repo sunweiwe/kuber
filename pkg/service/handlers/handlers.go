@@ -6,3 +6,9 @@ import "github.com/gin-gonic/gin"
 func NotOK(c *gin.Context, err error) {
 
 }
+
+type ResponseStruct struct {
+	Message   string
+	Data      interface{}
+	ErrorData interface{}
+}

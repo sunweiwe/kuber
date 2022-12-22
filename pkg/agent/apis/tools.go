@@ -1,6 +1,13 @@
 package apis
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"k8s.io/apimachinery/pkg/fields"
+)
+
+const (
+	allNamespace = "_all"
+)
 
 func paramFromHeaderOrQuery(c *gin.Context, key, defaultV string) string {
 	hv := c.Request.Header.Get(key)
@@ -14,4 +21,16 @@ func paramFromHeaderOrQuery(c *gin.Context, key, defaultV string) string {
 	}
 
 	return defaultV
+}
+
+func fieldSelector(c *gin.Context) (fields.Selector, bool) {
+	fieldSelectorStr := c.Query("fieldSelector")
+	if len(fieldSelectorStr) == 0 {
+		return nil, false
+	}
+	sel, err := fields.ParseSelector(fieldSelectorStr)
+	if err != nil {
+		return nil, false
+	}
+	return sel, true
 }
