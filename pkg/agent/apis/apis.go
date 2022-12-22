@@ -154,6 +154,14 @@ func Run(ctx context.Context, cluster cluster.Interface, system *system.Options,
 	routes.register("core", "v1", "pods", "file", podHandler.DownloadFile)
 	routes.register("core", "v1", "pods", "upfile", podHandler.UploadFile)
 
+	rolloutHandler := &RolloutHandler{cluster: cluster}
+	routes.register("apps", "v1", "daemonsets", "rollouthistory", rolloutHandler.DaemonSetHistory)
+	routes.register("apps", "v1", "statefulsets", "rollouthistory", rolloutHandler.StatefulSetHistory)
+	routes.register("apps", "v1", "deployments", "rollouthistory", rolloutHandler.DeploymentHistory)
+	routes.register("apps", "v1", "daemonsets", "rollback", rolloutHandler.DaemonSetRollback)
+	routes.register("apps", "v1", "statefulsets", "rollback", rolloutHandler.StatefulSetRollback)
+	routes.register("apps", "v1", "deployments", "rollback", rolloutHandler.DeploymentRollback)
+
 	return nil
 }
 
