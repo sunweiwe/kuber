@@ -22,15 +22,15 @@ type EventHandler struct {
 // @Description 获取Event列表数据
 // @Accept      json
 // @Produce     json
-// @Param       order     query    string                                                           false "page"
-// @Param       page      query    int                                                              false "page"
-// @Param       size      query    int                                                              false "page"
-// @Param       search    query    string                                                           false "search"
-// @Param       namespace path     string                                                           true  "namespace"
-// @Param       cluster   path     string                                                           true  "cluster"
-// @Param       kind      query    string                                                           false "topkind"
-// @Param       name      query    string                                                           false "topname"
-// @Success     200       {object} handlers.ResponseStruct{Data=pagination.PageData{List=[]object}} "Event"
+// @Param       order     query    string                                                             false "page"
+// @Param       page      query    int                                                                false "page"
+// @Param       size      query    int                                                                false "page"
+// @Param       search    query    string                                                             false "search"
+// @Param       namespace path     string                                                             true  "namespace"
+// @Param       cluster   path     string                                                             true  "cluster"
+// @Param       kind      query    string                                                             false "topkind"
+// @Param       name      query    string                                                             false "topname"
+// @Success     200       {object} handlers.ResponseStruct{Data=pagination.Pagination{List=[]object}} "Event"
 // @Router      /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/events [get]
 // @Security    JWT
 func (h *EventHandler) List(c *gin.Context) {
@@ -46,6 +46,7 @@ func (h *EventHandler) List(c *gin.Context) {
 	}
 
 	objects := h.filterByKind(c, events.Items)
+
 	pageData := pagination.NewTypedSearchSortPageResourceFromContext(c, objects)
 
 	OK(c, pageData)

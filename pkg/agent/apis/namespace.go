@@ -31,12 +31,12 @@ var forbiddenBindNamespaces = []string{
 // @Description 获取可以绑定的环境的namespace列表数据
 // @Accept      json
 // @Produce     json
-// @Param       order   query    string                                                           false "page"
-// @Param       search  query    string                                                           false "search"
-// @Param       page    query    int                                                              false "page"
-// @Param       size    query    int                                                              false "page"
-// @Param       cluster path     string                                                           true  "cluster"
-// @Success     200     {object} handlers.ResponseStruct{Data=pagination.PageData{List=[]object}} "Namespace"
+// @Param       order   query    string                                                             false "page"
+// @Param       search  query    string                                                             false "search"
+// @Param       page    query    int                                                                false "page"
+// @Param       size    query    int                                                                false "page"
+// @Param       cluster path     string                                                             true  "cluster"
+// @Success     200     {object} handlers.ResponseStruct{Data=pagination.Pagination{List=[]object}} "Namespace"
 // @Router      /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces [get]
 // @Security    JWT
 

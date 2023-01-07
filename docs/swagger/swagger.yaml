@@ -1,0 +1,1866 @@
+definitions:
+  apis.CustomNode:
+    properties:
+      limits:
+        additionalProperties:
+          $ref: '#/definitions/resource.Quantity'
+        type: object
+      node:
+        $ref: '#/definitions/v1.Node'
+      requests:
+        additionalProperties:
+          $ref: '#/definitions/resource.Quantity'
+        type: object
+    type: object
+  apis.metaForm:
+    properties:
+      annotations:
+        additionalProperties:
+          type: string
+        type: object
+      labels:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  apis.scaleForm:
+    properties:
+      replicas:
+        type: integer
+    type: object
+  apis.taintForm:
+    properties:
+      taints:
+        items:
+          $ref: '#/definitions/v1.Taint'
+        type: array
+    type: object
+  client.ExtendedAlert:
+    properties:
+      annotations:
+        $ref: '#/definitions/client.LabelSet'
+      endsAt:
+        type: string
+      fingerprint:
+        type: string
+      generatorURL:
+        type: string
+      labels:
+        $ref: '#/definitions/client.LabelSet'
+      receivers:
+        items:
+          type: string
+        type: array
+      startsAt:
+        type: string
+      status:
+        $ref: '#/definitions/types.AlertStatus'
+    type: object
+  client.LabelSet:
+    additionalProperties:
+      type: string
+    type: object
+  handlers.ResponseStruct:
+    properties:
+      data: {}
+      errorData: {}
+      message:
+        type: string
+    type: object
+  pagination.Pagination:
+    properties:
+      current:
+        type: integer
+      list: {}
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  resource.Quantity:
+    properties:
+      Format:
+        type: string
+    type: object
+  types.AlertStatus:
+    properties:
+      inhibitedBy:
+        items:
+          type: string
+        type: array
+      silencedBy:
+        items:
+          type: string
+        type: array
+      state:
+        type: string
+    type: object
+  v1.AttachedVolume:
+    properties:
+      devicePath:
+        description: DevicePath represents the device path where the volume should
+          be available
+        type: string
+      name:
+        description: Name of the attached volume
+        type: string
+    type: object
+  v1.ConfigMapNodeConfigSource:
+    properties:
+      kubeletConfigKey:
+        description: |-
+          KubeletConfigKey declares which key of the referenced ConfigMap corresponds to the KubeletConfiguration structure
+          This field is required in all cases.
+        type: string
+      name:
+        description: |-
+          Name is the metadata.name of the referenced ConfigMap.
+          This field is required in all cases.
+        type: string
+      namespace:
+        description: |-
+          Namespace is the metadata.namespace of the referenced ConfigMap.
+          This field is required in all cases.
+        type: string
+      resourceVersion:
+        description: |-
+          ResourceVersion is the metadata.ResourceVersion of the referenced ConfigMap.
+          This field is forbidden in Node.Spec, and required in Node.Status.
+          +optional
+        type: string
+      uid:
+        description: |-
+          UID is the metadata.UID of the referenced ConfigMap.
+          This field is forbidden in Node.Spec, and required in Node.Status.
+          +optional
+        type: string
+    type: object
+  v1.ContainerImage:
+    properties:
+      names:
+        description: |-
+          Names by which this image is known.
+          e.g. ["kubernetes.example/hyperkube:v1.0.7", "cloud-vendor.registry.example/cloud-vendor/hyperkube:v1.0.7"]
+          +optional
+        items:
+          type: string
+        type: array
+      sizeBytes:
+        description: |-
+          The size of the image in bytes.
+          +optional
+        type: integer
+    type: object
+  v1.DaemonEndpoint:
+    properties:
+      Port:
+        description: Port number of the given endpoint.
+        type: integer
+    type: object
+  v1.FieldsV1:
+    type: object
+  v1.ManagedFieldsEntry:
+    properties:
+      apiVersion:
+        description: |-
+          APIVersion defines the version of this resource that this field set
+          applies to. The format is "group/version" just like the top-level
+          APIVersion field. It is necessary to track the version of a field
+          set because it cannot be automatically converted.
+        type: string
+      fieldsType:
+        description: |-
+          FieldsType is the discriminator for the different fields format and version.
+          There is currently only one possible value: "FieldsV1"
+        type: string
+      fieldsV1:
+        $ref: '#/definitions/v1.FieldsV1'
+        description: |-
+          FieldsV1 holds the first JSON version format as described in the "FieldsV1" type.
+          +optional
+      manager:
+        description: Manager is an identifier of the workflow managing these fields.
+        type: string
+      operation:
+        description: |-
+          Operation is the type of operation which lead to this ManagedFieldsEntry being created.
+          The only valid values for this field are 'Apply' and 'Update'.
+        type: string
+      subresource:
+        description: |-
+          Subresource is the name of the subresource used to update that object, or
+          empty string if the object was updated through the main resource. The
+          value of this field is used to distinguish between managers, even if they
+          share the same name. For example, a status update will be distinct from a
+          regular update using the same manager name.
+          Note that the APIVersion field is not related to the Subresource field and
+          it always corresponds to the version of the main resource.
+        type: string
+      time:
+        description: |-
+          Time is the timestamp of when the ManagedFields entry was added. The
+          timestamp will also be updated if a field is added, the manager
+          changes any of the owned fields value or removes a field. The
+          timestamp does not update when a field is removed from the entry
+          because another manager took it over.
+          +optional
+        type: string
+    type: object
+  v1.Node:
+    properties:
+      annotations:
+        additionalProperties:
+          type: string
+        description: |-
+          Annotations is an unstructured key value map stored with a resource that may be
+          set by external tools to store and retrieve arbitrary metadata. They are not
+          queryable and should be preserved when modifying objects.
+          More info: http://kubernetes.io/docs/user-guide/annotations
+          +optional
+        type: object
+      apiVersion:
+        description: |-
+          APIVersion defines the versioned schema of this representation of an object.
+          Servers should convert recognized schemas to the latest internal value, and
+          may reject unrecognized values.
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+          +optional
+        type: string
+      creationTimestamp:
+        description: |-
+          CreationTimestamp is a timestamp representing the server time when this object was
+          created. It is not guaranteed to be set in happens-before order across separate operations.
+          Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+
+          Populated by the system.
+          Read-only.
+          Null for lists.
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+          +optional
+        type: string
+      deletionGracePeriodSeconds:
+        description: |-
+          Number of seconds allowed for this object to gracefully terminate before
+          it will be removed from the system. Only set when deletionTimestamp is also set.
+          May only be shortened.
+          Read-only.
+          +optional
+        type: integer
+      deletionTimestamp:
+        description: |-
+          DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted. This
+          field is set by the server when a graceful deletion is requested by the user, and is not
+          directly settable by a client. The resource is expected to be deleted (no longer visible
+          from resource lists, and not reachable by name) after the time in this field, once the
+          finalizers list is empty. As long as the finalizers list contains items, deletion is blocked.
+          Once the deletionTimestamp is set, this value may not be unset or be set further into the
+          future, although it may be shortened or the resource may be deleted prior to this time.
+          For example, a user may request that a pod is deleted in 30 seconds. The Kubelet will react
+          by sending a graceful termination signal to the containers in the pod. After that 30 seconds,
+          the Kubelet will send a hard termination signal (SIGKILL) to the container and after cleanup,
+          remove the pod from the API. In the presence of network partitions, this object may still
+          exist after this timestamp, until an administrator or automated process can determine the
+          resource is fully terminated.
+          If not set, graceful deletion of the object has not been requested.
+
+          Populated by the system when a graceful deletion is requested.
+          Read-only.
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+          +optional
+        type: string
+      finalizers:
+        description: |-
+          Must be empty before the object is deleted from the registry. Each entry
+          is an identifier for the responsible component that will remove the entry
+          from the list. If the deletionTimestamp of the object is non-nil, entries
+          in this list can only be removed.
+          Finalizers may be processed and removed in any order.  Order is NOT enforced
+          because it introduces significant risk of stuck finalizers.
+          finalizers is a shared field, any actor with permission can reorder it.
+          If the finalizer list is processed in order, then this can lead to a situation
+          in which the component responsible for the first finalizer in the list is
+          waiting for a signal (field value, external system, or other) produced by a
+          component responsible for a finalizer later in the list, resulting in a deadlock.
+          Without enforced ordering finalizers are free to order amongst themselves and
+          are not vulnerable to ordering changes in the list.
+          +optional
+          +patchStrategy=merge
+        items:
+          type: string
+        type: array
+      generateName:
+        description: |-
+          GenerateName is an optional prefix, used by the server, to generate a unique
+          name ONLY IF the Name field has not been provided.
+          If this field is used, the name returned to the client will be different
+          than the name passed. This value will also be combined with a unique suffix.
+          The provided value has the same validation rules as the Name field,
+          and may be truncated by the length of the suffix required to make the value
+          unique on the server.
+
+          If this field is specified and the generated name exists, the server will return a 409.
+
+          Applied only if Name is not specified.
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency
+          +optional
+        type: string
+      generation:
+        description: |-
+          A sequence number representing a specific generation of the desired state.
+          Populated by the system. Read-only.
+          +optional
+        type: integer
+      kind:
+        description: |-
+          Kind is a string value representing the REST resource this object represents.
+          Servers may infer this from the endpoint the client submits requests to.
+          Cannot be updated.
+          In CamelCase.
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+          +optional
+        type: string
+      labels:
+        additionalProperties:
+          type: string
+        description: |-
+          Map of string keys and values that can be used to organize and categorize
+          (scope and select) objects. May match selectors of replication controllers
+          and services.
+          More info: http://kubernetes.io/docs/user-guide/labels
+          +optional
+        type: object
+      managedFields:
+        description: |-
+          ManagedFields maps workflow-id and version to the set of fields
+          that are managed by that workflow. This is mostly for internal
+          housekeeping, and users typically shouldn't need to set or
+          understand this field. A workflow can be the user's name, a
+          controller's name, or the name of a specific apply path like
+          "ci-cd". The set of fields is always in the version that the
+          workflow used when modifying the object.
+
+          +optional
+        items:
+          $ref: '#/definitions/v1.ManagedFieldsEntry'
+        type: array
+      name:
+        description: |-
+          Name must be unique within a namespace. Is required when creating resources, although
+          some resources may allow a client to request the generation of an appropriate name
+          automatically. Name is primarily intended for creation idempotence and configuration
+          definition.
+          Cannot be updated.
+          More info: http://kubernetes.io/docs/user-guide/identifiers#names
+          +optional
+        type: string
+      namespace:
+        description: |-
+          Namespace defines the space within which each name must be unique. An empty namespace is
+          equivalent to the "default" namespace, but "default" is the canonical representation.
+          Not all objects are required to be scoped to a namespace - the value of this field for
+          those objects will be empty.
+
+          Must be a DNS_LABEL.
+          Cannot be updated.
+          More info: http://kubernetes.io/docs/user-guide/namespaces
+          +optional
+        type: string
+      ownerReferences:
+        description: |-
+          List of objects depended by this object. If ALL objects in the list have
+          been deleted, this object will be garbage collected. If this object is managed by a controller,
+          then an entry in this list will point to this controller, with the controller field set to true.
+          There cannot be more than one managing controller.
+          +optional
+          +patchMergeKey=uid
+          +patchStrategy=merge
+        items:
+          $ref: '#/definitions/v1.OwnerReference'
+        type: array
+      resourceVersion:
+        description: |-
+          An opaque value that represents the internal version of this object that can
+          be used by clients to determine when objects have changed. May be used for optimistic
+          concurrency, change detection, and the watch operation on a resource or set of resources.
+          Clients must treat these values as opaque and passed unmodified back to the server.
+          They may only be valid for a particular resource or set of resources.
+
+          Populated by the system.
+          Read-only.
+          Value must be treated as opaque by clients and .
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+          +optional
+        type: string
+      selfLink:
+        description: |-
+          Deprecated: selfLink is a legacy read-only field that is no longer populated by the system.
+          +optional
+        type: string
+      spec:
+        $ref: '#/definitions/v1.NodeSpec'
+        description: |-
+          Spec defines the behavior of a node.
+          https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+          +optional
+      status:
+        $ref: '#/definitions/v1.NodeStatus'
+        description: |-
+          Most recently observed status of the node.
+          Populated by the system.
+          Read-only.
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+          +optional
+      uid:
+        description: |-
+          UID is the unique in time and space value for this object. It is typically generated by
+          the server on successful creation of a resource and is not allowed to change on PUT
+          operations.
+
+          Populated by the system.
+          Read-only.
+          More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+          +optional
+        type: string
+    type: object
+  v1.NodeAddress:
+    properties:
+      address:
+        description: The node address.
+        type: string
+      type:
+        description: Node address type, one of Hostname, ExternalIP or InternalIP.
+        type: string
+    type: object
+  v1.NodeCondition:
+    properties:
+      lastHeartbeatTime:
+        description: |-
+          Last time we got an update on a given condition.
+          +optional
+        type: string
+      lastTransitionTime:
+        description: |-
+          Last time the condition transit from one status to another.
+          +optional
+        type: string
+      message:
+        description: |-
+          Human readable message indicating details about last transition.
+          +optional
+        type: string
+      reason:
+        description: |-
+          (brief) reason for the condition's last transition.
+          +optional
+        type: string
+      status:
+        description: Status of the condition, one of True, False, Unknown.
+        type: string
+      type:
+        description: Type of node condition.
+        type: string
+    type: object
+  v1.NodeConfigSource:
+    properties:
+      configMap:
+        $ref: '#/definitions/v1.ConfigMapNodeConfigSource'
+        description: ConfigMap is a reference to a Node's ConfigMap
+    type: object
+  v1.NodeConfigStatus:
+    properties:
+      active:
+        $ref: '#/definitions/v1.NodeConfigSource'
+        description: |-
+          Active reports the checkpointed config the node is actively using.
+          Active will represent either the current version of the Assigned config,
+          or the current LastKnownGood config, depending on whether attempting to use the
+          Assigned config results in an error.
+          +optional
+      assigned:
+        $ref: '#/definitions/v1.NodeConfigSource'
+        description: |-
+          Assigned reports the checkpointed config the node will try to use.
+          When Node.Spec.ConfigSource is updated, the node checkpoints the associated
+          config payload to local disk, along with a record indicating intended
+          config. The node refers to this record to choose its config checkpoint, and
+          reports this record in Assigned. Assigned only updates in the status after
+          the record has been checkpointed to disk. When the Kubelet is restarted,
+          it tries to make the Assigned config the Active config by loading and
+          validating the checkpointed payload identified by Assigned.
+          +optional
+      error:
+        description: |-
+          Error describes any problems reconciling the Spec.ConfigSource to the Active config.
+          Errors may occur, for example, attempting to checkpoint Spec.ConfigSource to the local Assigned
+          record, attempting to checkpoint the payload associated with Spec.ConfigSource, attempting
+          to load or validate the Assigned config, etc.
+          Errors may occur at different points while syncing config. Earlier errors (e.g. download or
+          checkpointing errors) will not result in a rollback to LastKnownGood, and may resolve across
+          Kubelet retries. Later errors (e.g. loading or validating a checkpointed config) will result in
+          a rollback to LastKnownGood. In the latter case, it is usually possible to resolve the error
+          by fixing the config assigned in Spec.ConfigSource.
+          You can find additional information for debugging by searching the error message in the Kubelet log.
+          Error is a human-readable description of the error state; machines can check whether or not Error
+          is empty, but should not rely on the stability of the Error text across Kubelet versions.
+          +optional
+        type: string
+      lastKnownGood:
+        $ref: '#/definitions/v1.NodeConfigSource'
+        description: |-
+          LastKnownGood reports the checkpointed config the node will fall back to
+          when it encounters an error attempting to use the Assigned config.
+          The Assigned config becomes the LastKnownGood config when the node determines
+          that the Assigned config is stable and correct.
+          This is currently implemented as a 10-minute soak period starting when the local
+          record of Assigned config is updated. If the Assigned config is Active at the end
+          of this period, it becomes the LastKnownGood. Note that if Spec.ConfigSource is
+          reset to nil (use local defaults), the LastKnownGood is also immediately reset to nil,
+          because the local default config is always assumed good.
+          You should not make assumptions about the node's method of determining config stability
+          and correctness, as this may change or become configurable in the future.
+          +optional
+    type: object
+  v1.NodeDaemonEndpoints:
+    properties:
+      kubeletEndpoint:
+        $ref: '#/definitions/v1.DaemonEndpoint'
+        description: |-
+          Endpoint on which Kubelet is listening.
+          +optional
+    type: object
+  v1.NodeSpec:
+    properties:
+      configSource:
+        $ref: '#/definitions/v1.NodeConfigSource'
+        description: |-
+          Deprecated: Previously used to specify the source of the node's configuration for the DynamicKubeletConfig feature. This feature is removed.
+          +optional
+      externalID:
+        description: |-
+          Deprecated. Not all kubelets will set this field. Remove field after 1.13.
+          see: https://issues.k8s.io/61966
+          +optional
+        type: string
+      podCIDR:
+        description: |-
+          PodCIDR represents the pod IP range assigned to the node.
+          +optional
+        type: string
+      podCIDRs:
+        description: |-
+          podCIDRs represents the IP ranges assigned to the node for usage by Pods on that node. If this
+          field is specified, the 0th entry must match the podCIDR field. It may contain at most 1 value for
+          each of IPv4 and IPv6.
+          +optional
+          +patchStrategy=merge
+        items:
+          type: string
+        type: array
+      providerID:
+        description: |-
+          ID of the node assigned by the cloud provider in the format: <ProviderName>://<ProviderSpecificNodeID>
+          +optional
+        type: string
+      taints:
+        description: |-
+          If specified, the node's taints.
+          +optional
+        items:
+          $ref: '#/definitions/v1.Taint'
+        type: array
+      unschedulable:
+        description: |-
+          Unschedulable controls node schedulability of new pods. By default, node is schedulable.
+          More info: https://kubernetes.io/docs/concepts/nodes/node/#manual-node-administration
+          +optional
+        type: boolean
+    type: object
+  v1.NodeStatus:
+    properties:
+      addresses:
+        description: |-
+          List of addresses reachable to the node.
+          Queried from cloud provider, if available.
+          More info: https://kubernetes.io/docs/concepts/nodes/node/#addresses
+          Note: This field is declared as mergeable, but the merge key is not sufficiently
+          unique, which can cause data corruption when it is merged. Callers should instead
+          use a full-replacement patch. See https://pr.k8s.io/79391 for an example.
+          +optional
+          +patchMergeKey=type
+          +patchStrategy=merge
+        items:
+          $ref: '#/definitions/v1.NodeAddress'
+        type: array
+      allocatable:
+        $ref: '#/definitions/v1.ResourceList'
+        description: |-
+          Allocatable represents the resources of a node that are available for scheduling.
+          Defaults to Capacity.
+          +optional
+      capacity:
+        $ref: '#/definitions/v1.ResourceList'
+        description: |-
+          Capacity represents the total resources of a node.
+          More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
+          +optional
+      conditions:
+        description: |-
+          Conditions is an array of current observed node conditions.
+          More info: https://kubernetes.io/docs/concepts/nodes/node/#condition
+          +optional
+          +patchMergeKey=type
+          +patchStrategy=merge
+        items:
+          $ref: '#/definitions/v1.NodeCondition'
+        type: array
+      config:
+        $ref: '#/definitions/v1.NodeConfigStatus'
+        description: |-
+          Status of the config assigned to the node via the dynamic Kubelet config feature.
+          +optional
+      daemonEndpoints:
+        $ref: '#/definitions/v1.NodeDaemonEndpoints'
+        description: |-
+          Endpoints of daemons running on the Node.
+          +optional
+      images:
+        description: |-
+          List of container images on this node
+          +optional
+        items:
+          $ref: '#/definitions/v1.ContainerImage'
+        type: array
+      nodeInfo:
+        $ref: '#/definitions/v1.NodeSystemInfo'
+        description: |-
+          Set of ids/uuids to uniquely identify the node.
+          More info: https://kubernetes.io/docs/concepts/nodes/node/#info
+          +optional
+      phase:
+        description: |-
+          NodePhase is the recently observed lifecycle phase of the node.
+          More info: https://kubernetes.io/docs/concepts/nodes/node/#phase
+          The field is never populated, and now is deprecated.
+          +optional
+        type: string
+      volumesAttached:
+        description: |-
+          List of volumes that are attached to the node.
+          +optional
+        items:
+          $ref: '#/definitions/v1.AttachedVolume'
+        type: array
+      volumesInUse:
+        description: |-
+          List of attachable volumes in use (mounted) by the node.
+          +optional
+        items:
+          description: Name of the attached volume
+          type: string
+        type: array
+    type: object
+  v1.NodeSystemInfo:
+    properties:
+      architecture:
+        description: The Architecture reported by the node
+        type: string
+      bootID:
+        description: Boot ID reported by the node.
+        type: string
+      containerRuntimeVersion:
+        description: ContainerRuntime Version reported by the node through runtime
+          remote API (e.g. containerd://1.4.2).
+        type: string
+      kernelVersion:
+        description: Kernel Version reported by the node from 'uname -r' (e.g. 3.16.0-0.bpo.4-amd64).
+        type: string
+      kubeProxyVersion:
+        description: KubeProxy Version reported by the node.
+        type: string
+      kubeletVersion:
+        description: Kubelet Version reported by the node.
+        type: string
+      machineID:
+        description: |-
+          MachineID reported by the node. For unique machine identification
+          in the cluster this field is preferred. Learn more from man(5)
+          machine-id: http://man7.org/linux/man-pages/man5/machine-id.5.html
+        type: string
+      operatingSystem:
+        description: The Operating System reported by the node
+        type: string
+      osImage:
+        description: OS Image reported by the node from /etc/os-release (e.g. Debian
+          GNU/Linux 7 (wheezy)).
+        type: string
+      systemUUID:
+        description: |-
+          SystemUUID reported by the node. For unique machine identification
+          MachineID is preferred. This field is specific to Red Hat hosts
+          https://access.redhat.com/documentation/en-us/red_hat_subscription_management/1/html/rhsm/uuid
+        type: string
+    type: object
+  v1.OwnerReference:
+    properties:
+      apiVersion:
+        description: API version of the referent.
+        type: string
+      blockOwnerDeletion:
+        description: |-
+          If true, AND if the owner has the "foregroundDeletion" finalizer, then
+          the owner cannot be deleted from the key-value store until this
+          reference is removed.
+          See https://kubernetes.io/docs/concepts/architecture/garbage-collection/#foreground-deletion
+          for how the garbage collector interacts with this field and enforces the foreground deletion.
+          Defaults to false.
+          To set this field, a user needs "delete" permission of the owner,
+          otherwise 422 (Unprocessable Entity) will be returned.
+          +optional
+        type: boolean
+      controller:
+        description: |-
+          If true, this reference points to the managing controller.
+          +optional
+        type: boolean
+      kind:
+        description: |-
+          Kind of the referent.
+          More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+        type: string
+      name:
+        description: |-
+          Name of the referent.
+          More info: http://kubernetes.io/docs/user-guide/identifiers#names
+        type: string
+      uid:
+        description: |-
+          UID of the referent.
+          More info: http://kubernetes.io/docs/user-guide/identifiers#uids
+        type: string
+    type: object
+  v1.ResourceList:
+    additionalProperties:
+      $ref: '#/definitions/resource.Quantity'
+    type: object
+  v1.Taint:
+    properties:
+      effect:
+        description: |-
+          Required. The effect of the taint on pods
+          that do not tolerate the taint.
+          Valid effects are NoSchedule, PreferNoSchedule and NoExecute.
+        type: string
+      key:
+        description: Required. The taint key to be applied to a node.
+        type: string
+      timeAdded:
+        description: |-
+          TimeAdded represents the time at which the taint was added.
+          It is only written for NoExecute taints.
+          +optional
+        type: string
+      value:
+        description: |-
+          The taint value corresponding to the taint key.
+          +optional
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/proxy/cluster/{cluster}/{group}/{version}/namespaces/{namespace}/{resource}:
+    get:
+      consumes:
+      - application/json
+      description: 获取namespaced scope workload  list
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: resource
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: watch
+        in: query
+        name: watch
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  items:
+                    type: object
+                  type: array
+              type: object
+      security:
+      - JWT: []
+      summary: 获取namespaced scope workload  list
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/{group}/{version}/namespaces/{namespace}/{resource}/{name}:
+    delete:
+      consumes:
+      - application/json
+      description: 创建namespaced scope workload
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: resoruce
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 创建namespaced scope workload
+      tags:
+      - Agent.V1
+    get:
+      consumes:
+      - application/json
+      description: 获取namespaced scope workload
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: resoruce
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 获取namespaced scope workload
+      tags:
+      - Agent.V1
+    patch:
+      consumes:
+      - application/json
+      description: 创建namespaced scope workload
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: resoruce
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 创建namespaced scope workload
+      tags:
+      - Agent.V1
+    post:
+      consumes:
+      - application/json
+      description: 创建 none namespaced scope workload
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: resoruce
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 创建 none namespaced scope workload
+      tags:
+      - Agent.V1
+    put:
+      consumes:
+      - application/json
+      description: 创建namespaced scope workload
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: resoruce
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 创建namespaced scope workload
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/{group}/{version}/namespaces/{namespace}/{resource}/{name}/actions/scale:
+    patch:
+      consumes:
+      - application/json
+      description: 扩缩容
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: version
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: resoruce
+        in: path
+        name: resource
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apis.scaleForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 扩缩容
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/alertmanager/v1/alerts:
+    get:
+      consumes:
+      - application/json
+      description: 获取alertmanager中的告警数据
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: filter
+        in: query
+        name: filter
+        type: string
+      - description: receiver
+        in: query
+        name: receiver
+        type: string
+      - description: silenced
+        in: query
+        name: silenced
+        type: boolean
+      - description: inhibited
+        in: query
+        name: inhibited
+        type: boolean
+      - description: active
+        in: query
+        name: active
+        type: boolean
+      - description: unprocessed
+        in: query
+        name: unprocessed
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: labelvalues
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/client.ExtendedAlert'
+                  type: array
+              type: object
+      security:
+      - JWT: []
+      summary: 获取alertmanager中的告警数据
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/batch/v1/namespaces/{namespace}/jobs:
+    get:
+      consumes:
+      - application/json
+      description: 获取Job列表数据
+      parameters:
+      - description: page
+        in: query
+        name: order
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: page
+        in: query
+        name: size
+        type: integer
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: kind(cronjob)
+        in: query
+        name: kind
+        type: string
+      - description: name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Job
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  allOf:
+                  - $ref: '#/definitions/pagination.Pagination'
+                  - properties:
+                      List:
+                        items:
+                          type: object
+                        type: array
+                    type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 获取Job列表数据
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/{namespace}/pods/{name}/actions/debug:
+    get:
+      description: 调试容器(websocket)
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: pod name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: container
+        in: query
+        name: container
+        required: true
+        type: string
+      - description: must be true
+        in: query
+        name: stream
+        required: true
+        type: string
+      - description: agent
+        in: query
+        name: agent
+        type: string
+      - description: debug
+        in: query
+        name: debug
+        type: string
+      - description: fork
+        in: query
+        name: fork
+        type: string
+      responses:
+        "200":
+          description: ws
+          schema:
+            type: object
+      security:
+      - JWT: []
+      summary: 调试容器(websocket)
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/events:
+    get:
+      consumes:
+      - application/json
+      description: 获取Event列表数据
+      parameters:
+      - description: page
+        in: query
+        name: order
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: page
+        in: query
+        name: size
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: topkind
+        in: query
+        name: kind
+        type: string
+      - description: topname
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  allOf:
+                  - $ref: '#/definitions/pagination.Pagination'
+                  - properties:
+                      List:
+                        items:
+                          type: object
+                        type: array
+                    type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 获取Event列表数据
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/pods:
+    get:
+      consumes:
+      - application/json
+      description: 获取Pod列表数据
+      parameters:
+      - description: page
+        in: query
+        name: order
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: page
+        in: query
+        name: size
+        type: integer
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: fieldSelector, 只支持podstatus={xxx}格式
+        in: query
+        name: fieldSelector
+        type: string
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: kind(Deployment,StatefulSet,DaemonSet,Job,Node)
+        in: query
+        name: kind
+        type: string
+      - description: name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Pod
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  allOf:
+                  - $ref: '#/definitions/pagination.Pagination'
+                  - properties:
+                      List:
+                        items:
+                          type: object
+                        type: array
+                    type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 获取Pod列表数据
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/pods/{name}/actions/logs:
+    get:
+      description: 实时获取日志STDOUT输出(websocket)
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: pod
+        in: path
+        name: pod
+        required: true
+        type: string
+      - description: container
+        in: query
+        name: container
+        required: true
+        type: string
+      - description: stream must be true
+        in: query
+        name: stream
+        required: true
+        type: string
+      - description: follow
+        in: query
+        name: follow
+        required: true
+        type: string
+      - description: tail line (default 1000)
+        in: query
+        name: tail
+        type: integer
+      responses:
+        "200":
+          description: ws
+          schema:
+            type: object
+      security:
+      - JWT: []
+      summary: 实时获取日志STDOUT输出(websocket)
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/pods/{name}/actions/shell:
+    get:
+      description: 进入容器交互执行命令(websocket)
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: pod
+        in: path
+        name: pod
+        required: true
+        type: string
+      - description: container
+        in: query
+        name: container
+        required: true
+        type: string
+      - description: stream must be true
+        in: query
+        name: stream
+        required: true
+        type: string
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: default sh, choice(bash,ash,zsh)
+        in: query
+        name: shell
+        type: string
+      responses:
+        "200":
+          description: ws
+          schema:
+            type: object
+      security:
+      - JWT: []
+      summary: 进入容器交互执行命令(websocket)
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/pods/{name}/file:
+    get:
+      description: 从容器下载文件
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: pod
+        in: path
+        name: pod
+        required: true
+        type: string
+      - description: container
+        in: query
+        name: container
+        required: true
+        type: string
+      - description: filename
+        in: query
+        name: filename
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ws
+          schema:
+            type: object
+      security:
+      - JWT: []
+      summary: 从容器下载文件
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/pods/{name}/upfile:
+    post:
+      description: upload files to container
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: pod
+        in: path
+        name: pod
+        required: true
+        type: string
+      - description: container
+        in: query
+        name: container
+        required: true
+        type: string
+      - description: filename
+        in: query
+        name: filename
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ws
+          schema:
+            type: object
+      security:
+      - JWT: []
+      summary: upload files to container
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/nodes/{name}:
+    get:
+      consumes:
+      - application/json
+      description: 自定义的NODE详情接口,(可以获取资源分配情况)
+      parameters:
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Node
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  $ref: '#/definitions/apis.CustomNode'
+              type: object
+      security:
+      - JWT: []
+      summary: 自定义的NODE详情接口,(可以获取资源分配情况)
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/nodes/{name}/actions/metadata:
+    patch:
+      consumes:
+      - application/json
+      description: 修改node的元数据,label和annotations
+      parameters:
+      - description: 表单
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/apis.metaForm'
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Node
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 修改node的元数据,label和annotations
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/core/v1/nodes/{name}/actions/taint:
+    patch:
+      consumes:
+      - application/json
+      description: 修改节点污点
+      parameters:
+      - description: 表单
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/apis.taintForm'
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Node
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 修改节点污点
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/prometheus/v1/vector:
+    get:
+      consumes:
+      - application/json
+      description: Prometheus Vector
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: query
+        in: query
+        name: query
+        type: string
+      - description: nullable
+        in: query
+        name: nullable
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: vector
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: Prometheus Vector
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/statistics.system/v1/resources:
+    get:
+      consumes:
+      - application/json
+      description: 获取集群级别资源统计
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 获取集群级别资源统计
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/statistics.system/v1/workloads:
+    get:
+      consumes:
+      - application/json
+      description: 获取集群内各种workload的统计
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: counter
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.ResponseStruct'
+            - properties:
+                Data:
+                  type: object
+              type: object
+      security:
+      - JWT: []
+      summary: 获取集群内各种workload的统计
+      tags:
+      - Agent.V1
+  /v1/proxy/cluster/{cluster}/custom/system/v1/kubectl:
+    get:
+      description: kubectl
+      parameters:
+      - description: cluster
+        in: path
+        name: cluster
+        required: true
+        type: string
+      - description: stream must be true
+        in: query
+        name: stream
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ws
+          schema:
+            type: object
+      security:
+      - JWT: []
+      summary: kubectl
+      tags:
+      - Agent.V1
+swagger: "2.0"

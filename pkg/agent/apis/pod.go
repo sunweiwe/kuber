@@ -42,16 +42,16 @@ type PodHandler struct {
 // @Description 获取Pod列表数据
 // @Accept      json
 // @Produce     json
-// @Param       order         query    string                                                         false "page"
-// @Param       search        query    string                                                         false "search"
-// @Param       page          query    int                                                            false "page"
-// @Param       size          query    int                                                            false "page"
-// @Param       namespace     path     string                                                         true  "namespace"
-// @Param       fieldSelector query    string                                                         false "fieldSelector, 只支持podstatus={xxx}格式"
-// @Param       cluster       path     string                                                         true  "cluster"
-// @Param       kind          query    string                                                         false "kind(Deployment,StatefulSet,DaemonSet,Job,Node)"
-// @Param       name       query    string                                                         false "name"
-// @Success     200           {object} handlers.ResponseStruct{Data=handlers.PageData{List=[]object}} "Pod"
+// @Param       order         query    string                                                             false "page"
+// @Param       search        query    string                                                             false "search"
+// @Param       page          query    int                                                                false "page"
+// @Param       size          query    int                                                                false "page"
+// @Param       namespace     path     string                                                             true  "namespace"
+// @Param       fieldSelector query    string                                                             false "fieldSelector, 只支持podstatus={xxx}格式"
+// @Param       cluster       path     string                                                             true  "cluster"
+// @Param       kind          query    string                                                             false "kind(Deployment,StatefulSet,DaemonSet,Job,Node)"
+// @Param       name          query    string                                                             false "name"
+// @Success     200           {object} handlers.ResponseStruct{Data=pagination.Pagination{List=[]object}} "Pod"
 // @Router      /v1/proxy/cluster/{cluster}/custom/core/v1/namespaces/{namespace}/pods [get]
 // @Security    JWT
 func (h *PodHandler) List(c *gin.Context) {

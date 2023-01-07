@@ -55,6 +55,11 @@ generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and
 	# $(CONTROLLER_GEN) paths="./pkg/api/model/..."  crd  output:crd:artifacts:config=deploy/plugins/kuber-models/crds
 	$(CONTROLLER_GEN) paths="./pkg/..." object:headerFile="hack/boilerplate.go.txt"
 
+swagger:
+	go install github.com/swaggo/swag/cmd/swag@v1.8.4
+	swag f -g cmd/main.go
+	swag i --parseDependency --parseInternal -g cmd/main.go -o docs/swagger
+
 .PHONY: fmt
 fmt: ## Run go fmt against code.
 	go fmt ./...

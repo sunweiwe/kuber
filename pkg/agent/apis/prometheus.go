@@ -29,10 +29,10 @@ func NewPrometheusHandler(server string) (*prometheusHandler, error) {
 // @Description Prometheus Vector
 // @Accept      json
 // @Produce     json
-// @Param       cluster path     string                               true "cluster"
-// @Param       query   query    string                               false "query"
-// @Param       nullable query    bool                                false "nullable"
-// @Success     200     {object} handlers.ResponseStruct{Data=object} "vector"
+// @Param       cluster  path     string                               true  "cluster"
+// @Param       query    query    string                               false "query"
+// @Param       nullable query    bool                                 false "nullable"
+// @Success     200      {object} handlers.ResponseStruct{Data=object} "vector"
 // @Router      /v1/proxy/cluster/{cluster}/custom/prometheus/v1/vector [get]
 // @Security    JWT
 func (p *prometheusHandler) Vector(c *gin.Context) {
