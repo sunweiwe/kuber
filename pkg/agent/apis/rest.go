@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sunweiwe/kuber/pkg/agent/cluster.go"
+	"github.com/sunweiwe/kuber/pkg/agent/cluster"
 	"github.com/sunweiwe/kuber/pkg/log"
 	"github.com/sunweiwe/kuber/pkg/utils/pagination"
 	apiErrors "k8s.io/apimachinery/pkg/api/errors"

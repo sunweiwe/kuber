@@ -4,11 +4,14 @@ package apis
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sunweiwe/kuber/pkg/agent/cluster.go"
+	"github.com/sunweiwe/kuber/pkg/agent/client"
+	"github.com/sunweiwe/kuber/pkg/agent/cluster"
+	"github.com/sunweiwe/kuber/pkg/agent/middleware"
 	"github.com/sunweiwe/kuber/pkg/api/kuber"
 	"github.com/sunweiwe/kuber/pkg/log"
 	"github.com/sunweiwe/kuber/pkg/utils/prometheus/exporter"
@@ -96,6 +99,10 @@ func Run(ctx context.Context, cluster cluster.Interface, system *system.Options,
 		gin.Recovery(),
 	)
 
+	if options.EnableHTTPSigs {
+		G.Use(middleware.SignerMiddleware())
+	}
+
 	router := route.NewRouter()
 
 	G.Any("/*path", func(ctx *gin.Context) {
@@ -162,6 +169,31 @@ func Run(ctx context.Context, cluster cluster.Interface, system *system.Options,
 	routes.register("apps", "v1", "statefulsets", "rollback", rolloutHandler.StatefulSetRollback)
 	routes.register("apps", "v1", "deployments", "rollback", rolloutHandler.DeploymentRollback)
 
+	kubectlHandler := KubectlHandler{cluster: cluster, debugOptions: debugOptions}
+	routes.register("system", "v1", "kubectl", ActionList, kubectlHandler.Exec)
+
+	prometheusHandler, err := NewPrometheusHandler(options.PrometheusServer)
+	if err != nil {
+		return err
+	}
+	routes.register("prometheus", "v1", "vector", ActionList, prometheusHandler.Vector)
+
+	alertManagerHandler, err := NewAlertManagerClient(options.AlertManagerServer, cluster.Kubernetes())
+	if err != nil {
+		return err
+	}
+	routes.register("alertmanager", "v1", "alerts", ActionList, alertManagerHandler.ListAlerts)
+
+	jobHandle := &JobHandler{C: cluster.GetClient(), cluster: cluster}
+	routes.register("batch", "v1", "jobs", ActionList, jobHandle.List)
+
+	// service client internal apis
+	internalClientRest := client.ClientRest{Cli: cluster.GetClient()}
+	internalClientRest.Register(routes.r)
+
+	if err := listen(ctx, system, G); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -191,4 +223,37 @@ func (mu handlerMux) registerREST(cluster cluster.Interface) {
 
 	mu.r.PATCH("/v1/{group}/{version}/{resource}/{name}/actions/scale", restHandler.Scale)
 	mu.r.PATCH("/v1/{group}/{version}/namespaces/{namespace}/{resource}/{name}/actions/scale", restHandler.Scale)
+}
+
+func listen(ctx context.Context, options *system.Options, handler http.Handler) error {
+	server := http.Server{
+		BaseContext: func(net.Listener) context.Context { return ctx },
+		Addr:        options.Listen,
+		Handler:     handler,
+	}
+
+	if options.TLSConfigEnabled() {
+		tls, err := options.TLSConfig()
+		if err != nil {
+			return err
+		}
+		server.TLSConfig = tls
+		// server.TLSConfig.ClientAuth = tls.RequireAndVerifyClientCert // enable TLS client auth
+	} else {
+		log.Info("Tls config not found")
+	}
+
+	go func() {
+		<-ctx.Done()
+		log.Info("Shutting down server")
+		server.Close()
+	}()
+
+	if server.TLSConfig != nil {
+		log.Info("Listen on https", "addr", options.Listen)
+		return server.ListenAndServeTLS("", "")
+	} else {
+		log.Info("Listen on http", "addr", options.Listen)
+		return server.ListenAndServe()
+	}
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/sunweiwe/kuber/pkg/agent/cluster"
 	"github.com/sunweiwe/kuber/pkg/agent/ws"
 	"github.com/sunweiwe/kuber/pkg/service/handlers"
 	v1 "k8s.io/api/core/v1"
@@ -131,4 +132,70 @@ func kubectlContainer(ctx context.Context, ctl client.Client, debug *DebugOption
 		return podName, fmt.Errorf("Can't find kubectl container")
 	}
 	return podName, nil
+}
+
+type KubectlHandler struct {
+	cluster      cluster.Interface
+	debugOptions *DebugOptions
+}
+
+// Exec         kubectl
+// @Tags        Agent.V1
+// @Summary     kubectl
+// @Description kubectl
+// @Param       cluster path     string true "cluster"
+// @Param       stream  query    string true "stream must be true"
+// @Success     200     {object} object "ws"
+// @Router      /v1/proxy/cluster/{cluster}/custom/system/v1/kubectl [get]
+// @Security    JWT
+func (h *KubectlHandler) Exec(c *gin.Context) {
+	conn, err := ws.InitWebsocket(c.Writer, c.Request)
+	if err != nil {
+		_ = conn.WsWrite(websocket.TextMessage, []byte("init websocket connection error"))
+		conn.WsClose()
+		return
+	}
+	handler := &ws.StreamHandler{WsConn: conn, ResizeEvent: make(chan remotecommand.TerminalSize)}
+	exec, err := h.kubectl(c)
+	if err != nil {
+		log.Printf("Upgrade Websocket failed: %s", err.Error())
+		handlers.NotOK(c, err)
+		return
+	}
+	if err = exec.Stream(remotecommand.StreamOptions{
+		Stdin:             handler,
+		Stdout:            handler,
+		Stderr:            handler,
+		TerminalSizeQueue: handler,
+		Tty:               true,
+	}); err != nil {
+		_ = conn.WsWrite(websocket.TextMessage, []byte("init websocket stream error "+err.Error()))
+		<-time.AfterFunc(time.Duration(3)*time.Second, func() {
+			conn.WsClose()
+		}).C
+		return
+	}
+}
+
+func (h *KubectlHandler) kubectl(c *gin.Context) (remotecommand.Executor, error) {
+	command := []string{
+		"/bin/sh",
+		"-c",
+		"export LINES=20; export COLUMNS=100; TERM=xterm-256color; export TERM; [ -x /bin/bash ] && ([ -x /usr/bin/script ] && /usr/bin/script -q -c /bin/bash /dev/null || exec /bin/bash) || exec /bin/sh",
+	}
+	podName, err := kubectlContainer(c.Request.Context(), h.cluster.GetClient(), h.debugOptions)
+	if err != nil {
+		return nil, err
+	}
+	pe := PodCmdExecutor{
+		Cluster:   h.cluster,
+		Namespace: h.debugOptions.Namespace,
+		Pod:       podName,
+		Container: "",
+		Stdin:     true,
+		Stdout:    true,
+		Stderr:    true,
+		TTY:       true,
+	}
+	return pe.executor(command)
 }

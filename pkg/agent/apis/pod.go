@@ -14,7 +14,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/sunweiwe/kuber/pkg/agent/cluster.go"
+	"github.com/sunweiwe/kuber/pkg/agent/cluster"
 	"github.com/sunweiwe/kuber/pkg/agent/ws"
 	"github.com/sunweiwe/kuber/pkg/api/kuber"
 	"github.com/sunweiwe/kuber/pkg/log"

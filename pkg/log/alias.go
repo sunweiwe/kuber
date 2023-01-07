@@ -42,6 +42,10 @@ func Warnf(fmt string, v ...interface{}) {
 	GlobalLogger.WithOptions(zap.AddCallerSkip(1)).Sugar().Warnf(fmt, v...)
 }
 
+func Debugf(fmt string, v ...interface{}) {
+	GlobalLogger.WithOptions(zap.AddCallerSkip(1)).Sugar().Debugf(fmt, v...)
+}
+
 // use .Info("",fields), or .With(fields).Info("") instead
 func WithField(key string, value interface{}) *zap.SugaredLogger {
 	return GlobalLogger.Sugar().With(key, value)

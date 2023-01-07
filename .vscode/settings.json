@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "alertmanager",
     "apimachinery",
     "apiutil",
     "appsv",
@@ -11,6 +12,9 @@
     "Finalizers",
     "genclient",
     "gonic",
+    "gorm",
+    "healthz",
+    "httpsigs",
     "Infof",
     "istio",
     "kubebuilder",
@@ -19,7 +23,10 @@
     "limitranges",
     "logr",
     "metav",
+    "mysqlerr",
     "nginxinc",
+    "portforward",
+    "proxypath",
     "realpath",
     "remotecommand",
     "resourcequota",

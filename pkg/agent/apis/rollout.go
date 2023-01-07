@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sunweiwe/kuber/pkg/agent/cluster.go"
+	"github.com/sunweiwe/kuber/pkg/agent/cluster"
 	"github.com/sunweiwe/kuber/pkg/utils/kubertype"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"

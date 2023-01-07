@@ -3,6 +3,7 @@ package apis
 import (
 	"github.com/gin-gonic/gin"
 	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 const (
@@ -33,4 +34,10 @@ func fieldSelector(c *gin.Context) (fields.Selector, bool) {
 		return nil, false
 	}
 	return sel, true
+}
+
+func labelSelector(c *gin.Context) labels.Selector {
+	labelsMap := c.QueryMap("labels")
+	sel := labels.SelectorFromSet(labelsMap)
+	return sel
 }

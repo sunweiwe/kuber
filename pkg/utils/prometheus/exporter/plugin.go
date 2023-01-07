@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/sunweiwe/kuber/pkg/agent/cluster.go"
+	"github.com/sunweiwe/kuber/pkg/agent/cluster"
 	"github.com/sunweiwe/kuber/pkg/log"
 	"github.com/sunweiwe/kuber/pkg/utils/plugin"
 )

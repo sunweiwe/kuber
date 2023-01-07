@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sunweiwe/kuber/pkg/agent/apis"
-	"github.com/sunweiwe/kuber/pkg/agent/cluster.go"
+	"github.com/sunweiwe/kuber/pkg/agent/cluster"
 	"github.com/sunweiwe/kuber/pkg/agent/indexer"
 	"github.com/sunweiwe/kuber/pkg/kube"
 	"github.com/sunweiwe/kuber/pkg/log"
