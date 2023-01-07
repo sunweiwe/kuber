@@ -87,6 +87,7 @@ func (mu handlerMux) register(group, version, resource, action string, handler g
 	}
 }
 
+// TODO
 func Run(ctx context.Context, cluster cluster.Interface, system *system.Options, options *Options, debugOptions *DebugOptions) error {
 	G := gin.New()
 
@@ -186,6 +187,9 @@ func Run(ctx context.Context, cluster cluster.Interface, system *system.Options,
 
 	jobHandle := &JobHandler{C: cluster.GetClient(), cluster: cluster}
 	routes.register("batch", "v1", "jobs", ActionList, jobHandle.List)
+
+	eventHandler := EventHandler{C: cluster.GetClient()}
+	routes.register("core", "v1", "events", ActionList, eventHandler.List)
 
 	// service client internal apis
 	internalClientRest := client.ClientRest{Cli: cluster.GetClient()}

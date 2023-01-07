@@ -90,5 +90,5 @@ func Run(ctx context.Context, options *Options) error {
 		return exporterHandler.Run(ctx, options.Exporter)
 	})
 
-	return nil
+	return eg.Wait()
 }

@@ -7,4 +7,5 @@ var (
 	DaemonSet       = "DaemonSet"
 	TenantGateway   = "TenantGateway"
 	ModelDeployment = "ModelDeployment"
+	ReplicaSet      = "ReplicaSet"
 )
